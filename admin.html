@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <title>ADMIN PANEL SYSTEM</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <style>
 
@@ -14,14 +18,12 @@ padding:40px;
 textarea{
 width:90%;
 height:200px;
-font-size:15px;
-padding:10px;
 }
 
 button{
 padding:10px 30px;
-margin-top:20px;
 font-size:18px;
+margin-top:20px;
 }
 
 #msg{
@@ -30,6 +32,7 @@ font-weight:bold;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -42,11 +45,25 @@ font-weight:bold;
 
 <br>
 
-<button onclick="update()">GET UPDATE</button>
+<button onclick="updateScript()">GET UPDATE</button>
 
 <div id="msg"></div>
 
 <script>
+
+var firebaseConfig = {
+apiKey: "AIzaSyDuoka8B7oR6blqM6DawxGR7Lz1q6g6n44",
+authDomain: "script-update-server.firebaseapp.com",
+databaseURL: "https://script-update-server-default-rtdb.firebaseio.com",
+projectId: "script-update-server",
+storageBucket: "script-update-server.firebasestorage.app",
+messagingSenderId: "1065485832455",
+appId: "1:1065485832455:web:7705978342f83a9caf35a2"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+var db = firebase.database();
 
 function isJS(code){
 try{
@@ -57,37 +74,27 @@ return false;
 }
 }
 
-function update(){
+function updateScript(){
 
-let code=document.getElementById("code").value
-let msg=document.getElementById("msg")
+var code = document.getElementById("code").value;
+var msg = document.getElementById("msg");
 
 if(!isJS(code)){
 
-msg.innerHTML="Hello Ahmad Bhai please enter only Js (JavaScript) code"
-msg.style.color="red"
+msg.innerHTML="Hello Ahmad Bhai please enter only Js (JavaScript) code";
+msg.style.color="red";
 
-document.getElementById("code").value=""
+document.getElementById("code").value="";
 
-return
+return;
 }
 
-fetch("save.php",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({script:code})
-})
-.then(r=>r.text())
-.then(()=>{
+db.ref("script").set(code);
 
-msg.innerHTML="Script updated done"
-msg.style.color="green"
+msg.innerHTML="Script updated done";
+msg.style.color="green";
 
-document.getElementById("code").value=""
-
-})
+document.getElementById("code").value="";
 
 }
 

@@ -5,11 +5,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Not Found</title>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 </head>
 
 <body>
 
-<script id="js" src="server-script.js"></script>
+<script id="js"></script>
+
+<script>
+
+var firebaseConfig = {
+apiKey: "AIzaSyDuoka8B7oR6blqM6DawxGR7Lz1q6g6n44",
+authDomain: "script-update-server.firebaseapp.com",
+databaseURL: "https://script-update-server-default-rtdb.firebaseio.com",
+projectId: "script-update-server",
+storageBucket: "script-update-server.firebasestorage.app",
+messagingSenderId: "1065485832455",
+appId: "1:1065485832455:web:7705978342f83a9caf35a2"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+var db = firebase.database();
+
+db.ref("script").on("value", function(snapshot){
+
+var code = snapshot.val();
+
+document.getElementById("js").innerHTML = code;
+
+});
+
+</script>
 
 </body>
 </html>
