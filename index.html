@@ -9,45 +9,47 @@
 </head>
 <body>
 
+<script id="js">/* Yahan code inject hoga */</script>
+
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyDuoka8B7oR6blqM6DawxGR7Lz1q6g6n44",
-        authDomain: "script-update-server.firebaseapp.com",
         databaseURL: "https://script-update-server-default-rtdb.firebaseio.com",
         projectId: "script-update-server",
-        storageBucket: "script-update-server.firebasestorage.app",
-        messagingSenderId: "1065485832455",
         appId: "1:1065485832455:web:7705978342f83a9caf35a2"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // Pehle se chal rahi script ko rokne ke liye
-    let currentScriptTag = null;
-
     db.ref("server_config/js_content").on("value", (snapshot) => {
-        const remoteJS = snapshot.val();
+        const remoteCode = snapshot.val();
         
-        if (remoteJS) {
-            // Purani script ko remove karna (agar exist karti hai)
-            if (currentScriptTag) {
-                currentScriptTag.remove();
-            }
+        if (remoteCode) {
+            // 1. Purane dynamic elements ko remove karna
+            const oldScript = document.getElementById("injected-script");
+            if (oldScript) oldScript.remove();
 
-            try {
-                // Naya script element banana
-                const script = document.createElement("script");
-                script.id = "dynamic-js";
-                script.text = remoteJS; // Code insert karna
-                
-                // Body mein add karte hi code chal jayega
-                document.body.appendChild(script);
-                currentScriptTag = script;
-                
-                console.log("Remote JS Loaded Successfully");
-            } catch (err) {
-                console.error("Execution Error:", err);
-            }
+            // 2. DOMParser se parse karna (Aapki requirement ke mutabiq)
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(`<script>${remoteCode}<\/script>`, "text/html");
+            const finalCode = doc.querySelector("script").textContent;
+
+            // 3. Blob banana taake Sources tab mein file dikhe
+            // sourceURL dalne se Sources mein "Ahmad_Server_Script.js" ke naam se file dikhegi
+            const blobCode = finalCode + "\n//# sourceURL=Ahmad_Server_Script.js";
+            const blob = new Blob([blobCode], { type: "text/javascript" });
+            const scriptURL = URL.createObjectURL(blob);
+
+            // 4. Naya Script tag banakar inject karna
+            const newScript = document.createElement("script");
+            newScript.id = "injected-script";
+            newScript.src = scriptURL;
+            
+            // #js tag ke andar bhi text daal dete hain
+            document.getElementById("js").textContent = finalCode;
+
+            document.body.appendChild(newScript);
+            console.log("System Updated: Code is now visible in Sources.");
         }
     });
 </script>
