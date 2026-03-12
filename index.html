@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAIN</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Main Page</title>
 </head>
 <body>
 
 <script id="js">
-    // Last update JS code will load here dynamically
+<!-- Last admin-updated JS will load here -->
 </script>
 
 <script>
-(async()=>{
-    try{
-        // Load latest JS code from server
-        let res = await fetch("/script.js?t="+Date.now());
-        let code = await res.text();
+(async () => {
+    try {
+        // Load latest JS code dynamically from server
+        const res = await fetch("/script.js?t=" + Date.now());
+        const code = await res.text();
 
-        // Replace content of script#js
+        // Put it into the <script id="js">
         document.getElementById("js").innerHTML = code;
 
         // Run the code
         eval(code);
 
-    }catch(e){
-        console.error("Script load error",e);
+    } catch (e) {
+        console.error("Script load error", e);
     }
 })();
 </script>
