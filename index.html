@@ -1,22 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Loader</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAIN</title>
 </head>
-
 <body>
 
+<script id="js">
+    // Last update JS code will load here dynamically
+</script>
 
 <script>
-(async () => {
-    try {
-        // cache avoid ke liye timestamp add kiya
-        let res = await fetch("/script.js?t=" + Date.now());
+(async()=>{
+    try{
+        // Load latest JS code from server
+        let res = await fetch("/script.js?t="+Date.now());
         let code = await res.text();
-        eval(code); // script run
-    } catch(e) {
-        console.error("Script load error", e);
+
+        // Replace content of script#js
+        document.getElementById("js").innerHTML = code;
+
+        // Run the code
+        eval(code);
+
+    }catch(e){
+        console.error("Script load error",e);
     }
 })();
 </script>
