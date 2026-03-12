@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+</head>
+
+<body style="font-family:sans-serif">
+
+<h2>Script Update Panel</h2>
+
+<textarea id="code" style="width:100%;height:250px;"></textarea>
+
+<br><br>
+
+<button onclick="update()">GET READY</button>
+
+<p id="msg"></p>
+
+<script>
+async function update(){
+    let code = document.getElementById("code").value;
+
+    // PUT request to update script.js
+    await fetch("/script.js", {
+        method: "PUT",
+        headers: { "Content-Type": "text/plain" },
+        body: code
+    });
+
+    document.getElementById("msg").innerText = "Script Updated!";
+}
+</script>
+
+</body>
+</html>

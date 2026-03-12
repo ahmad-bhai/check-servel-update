@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Loader</title>
+</head>
+
+<body>
+
+
+<script>
+(async () => {
+    try {
+        // cache avoid ke liye timestamp add kiya
+        let res = await fetch("/script.js?t=" + Date.now());
+        let code = await res.text();
+        eval(code); // script run
+    } catch(e) {
+        console.error("Script load error", e);
+    }
+})();
+</script>
+
+</body>
+</html>
