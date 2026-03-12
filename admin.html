@@ -1,106 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>ADMIN PANEL SYSTEM</title>
-
-<style>
-body{
-font-family:sans-serif;
-text-align:center;
-padding:40px;
-}
-
-textarea{
-width:90%;
-height:200px;
-}
-
-button{
-padding:10px 30px;
-font-size:18px;
-margin-top:20px;
-}
-
-#msg{
-margin-top:20px;
-font-weight:bold;
-}
-</style>
-
+    <meta charset="UTF-8">
+    <title>Admin Panel - SERVER SYSTEM SCRIPT</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #1c242a; color: white; text-align: center; padding: 20px; }
+        .container { max-width: 900px; margin: auto; }
+        textarea { width: 100%; height: 400px; background: #000; color: #00ff00; padding: 15px; border: 2px solid #333; font-family: monospace; border-radius: 8px; }
+        button { background: #05c55e; color: white; padding: 15px 40px; border: none; cursor: pointer; margin-top: 20px; font-weight: bold; border-radius: 5px; }
+        #status { margin-top: 20px; font-size: 18px; font-weight: bold; }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <h1>ADMIN PANEL</h1>
+        <h3>SERVER SYSTEM SCRIPT</h3>
+        
+        <textarea id="scriptInput" placeholder="Paste your JS code here..."></textarea><br>
+        <button id="updateBtn">GET UPDATE</button>
+        <div id="status"></div>
+    </div>
 
-<h1>ADMIN PANEL SYSTEM</h1>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuoka8B7oR6blqM6DawxGR7Lz1q6g6n44",
+            authDomain: "script-update-server.firebaseapp.com",
+            databaseURL: "https://script-update-server-default-rtdb.firebaseio.com",
+            projectId: "script-update-server",
+            storageBucket: "script-update-server.firebasestorage.app",
+            messagingSenderId: "1065485832455",
+            appId: "1:1065485832455:web:7705978342f83a9caf35a2"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-<h3>SERVER SYSTEM SCRIPT</h3>
+        const input = document.getElementById('scriptInput');
+        const status = document.getElementById('status');
 
-<textarea id="code"></textarea>
+        document.getElementById('updateBtn').addEventListener('click', () => {
+            let code = input.value.trim();
 
-<br>
+            // NEW VALIDATION: Sirf tab block karega agar pura code <!DOCTYPE ya <html se shuru ho
+            // JS ke andar likhi hui HTML string ko block nahi karega
+            if (code.toLowerCase().startsWith("<!doctype") || code.toLowerCase().startsWith("<html")) {
+                status.style.color = "#ff6251";
+                status.innerHTML = "Hello Ahmad Bhai please enter only Js (JavaScript) code";
+                input.value = ""; 
+                return;
+            }
 
-<button onclick="update()">GET UPDATE</button>
+            if (code === "") {
+                status.innerHTML = "Pehle code toh likhen!";
+                return;
+            }
 
-<div id="msg"></div>
-
-<script>
-
-function isJS(code){
-
-try{
-
-new Function(code);
-
-return true;
-
-}catch{
-
-return false;
-
-}
-
-}
-
-function update(){
-
-let code=document.getElementById("code").value
-let msg=document.getElementById("msg")
-
-if(!isJS(code)){
-
-msg.innerHTML="Hello Ahmad Bhai please enter only Js (JavaScript) code"
-msg.style.color="red"
-
-document.getElementById("code").value=""
-
-return
-
-}
-
-fetch("https://script-update-server-default-rtdb.firebaseio.com/users.json",{
-
-method:"PUT",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify(code)
-
-})
-
-.then(()=>{
-
-msg.innerHTML="Script updated done"
-msg.style.color="green"
-
-document.getElementById("code").value=""
-
-})
-
-}
-
-</script>
-
+            // Firebase Update
+            db.ref("server_config").set({
+                js_content: code,
+                last_updated: Date.now()
+            }).then(() => {
+                status.style.color = "#05c55e";
+                status.innerHTML = "Script updated done";
+            }).catch(err => {
+                status.style.color = "red";
+                status.innerHTML = "Error: " + err.message;
+            });
+        });
+    </script>
 </body>
 </html>

